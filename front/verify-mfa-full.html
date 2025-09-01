@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify MFA</title>
+</head>
+
+<body>
+    <h1>Verify MFA (Enabled MFA)</h1>
+    <form onsubmit="verifyMfaCode(event)" method="POST">
+        <label for="code">Enter your code:</label>
+        <input type="text" id="code" name="code" required>
+        <button type="submit">Verify</button>
+    </form>
+
+    <a href="../index.html">Back to Home</a> <br>
+
+    <script>
+        async function verifyMfaCode(event) {
+            event.preventDefault();
+            const code = document.getElementById("code").value;
+            const response = await fetch("http://localhost:3000/auth/mfa/verify", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify({ code })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("token", data.accessToken);
+                window.location.href = "./login-success.html";
+                alert("MFA verified successfully!");
+            } else {
+                alert("Failed to verify MFA.");
+            }
+        }
+    </script>
+</body>
+
+</html>

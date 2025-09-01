@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup MFA</title>
+</head>
+
+<body>
+    <h1>Setup MFA</h1>
+    <h2>Your Secret Key: <span id="secret-key"></span></h2>
+    <div id="qr-code-container"></div>
+
+    <a href="../index.html">Back to Home</a> <br>
+    <a href="verify-mfa.html">Verify MFA Page</a> <br>
+    <script>
+        async function fetchQrCode() {
+            const response = await fetch("http://localhost:3000/mfa/totp/setup/start", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("secret-key").innerText = data.base32;
+                const qrCodeContainer = document.getElementById("qr-code-container");
+                qrCodeContainer.innerHTML = `<img src="${data.qr}" alt="QR Code">`;
+
+            } else {
+                console.error("Failed to fetch QR code");
+            }
+        }
+
+        fetchQrCode();
+    </script>
+</body>
+
+</html>

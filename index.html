@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Labs | MFA TOTP Labs</title>
+</head>
+
+<body>
+    <h1>Login</h1>
+    <form action="" onsubmit="HandleLogin(event)">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+        async function HandleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch("http://localhost:3000/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                alert("Login successful");
+                    console.log("MFA required:", data.tempToken);
+
+                if (data.mfa_required === false) {
+                    localStorage.setItem("token", data.accessToken);
+                    alert("MFA not required");
+                    window.location.href = "./front/setup-mfa.html";
+                } else {
+                    localStorage.setItem("token", data.tempToken);
+                    alert("MFA required");
+                    window.location.href = "./front/verify-mfa-full.html";
+                }
+
+            } else {
+                alert("Login failed");
+                console.error("Login failed");
+            }
+        }
+    </script>
+</body>
+
+</html>
