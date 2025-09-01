@@ -67,7 +67,7 @@ router.post('/mfa/totp/setup/verify', requireAuth, async (req, res) => {
     secret: base32,
     encoding: 'base32',
     token,
-    window: 1, // อนุโลม clock skew เล็กน้อย
+    window: 0 // '1' อนุโลม clock skew เล็กน้อย แปลว่ายอมรับโค้ดจากช่วงก่อนหน้า (เก่า ~30 วิ) และช่วงถัดไป (ล่วงหน้า ~30 วิ) ด้วย
   });
 
   if (!verified) {
